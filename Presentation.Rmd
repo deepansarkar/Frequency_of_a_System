@@ -1,0 +1,72 @@
+---
+title       : Frequency Of A System
+subtitle    : Finding the fundamental frequency of a system
+author      : Deepan Sarkar
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Fast Fourier Transform
+
+1. A Fast Fourier Transform (FFT) is an algorithm to compute the Discrete Fourier Transform (DFT) and its inverse.
+2. Fourier analysis converts time (or space) to frequency and vice versa.
+3. The fft(x) function in R performs FFT and inverse FFT.
+4. The fft output is a set of complex numbers which depict the power(modulus) and phase(arguement) at frequencies from zero to half sampling frequency.
+  
+```{r, results='hold'}
+z <- 3+4i # Complex number
+Mod(z)    # Power from the complex number
+Arg(z)    # Phase from the complex number
+```
+
+--- .class #id 
+
+## Frequency of a System
+
+The objective of this app is finding the dominant frequency or frequencies in a system. The user needs to type in a R equation with 't' as the independent variable and the power spectrum will be displayed with the dominant frequenies displayed.
+    
+The user needs to specify the sampling frequency to obtain the power spectrum.
+    
+NOTE: The dominant frequencies will be captured in the power spectrum if and only if the sampling frequency is atleast twice the value of the highest dominant frequency.
+    
+Let us find the fundamental frequency of the system 
+f(t) = sin( 2*pi*2*t ) sampled at fs=10
+
+```{r, echo=TRUE, results='hold'}
+fs <- 10 # Sampling frequency
+t <- seq( 0, 1, 1/fs )
+f <- sin( 2*pi*2*t )
+fft_data <- fft( f ) # FFT of the data
+n <- length( fft_data ) # Length of the fft data
+
+```
+
+--- .class #id 
+
+## Frequency of a System (contd...)
+
+```{r, echo=TRUE, results='hold', fig.height=3, fig.width=8, fig.align='center'}
+# Normalizing the fft data and removing the conjugate values
+fft_data <- ( fft_data/n )[1:((n-1)/2+1)]
+power <- Mod( fft_data ) # Power values
+freq <- seq( 0, fs/2 ) # Frequency values
+fc <- freq[power==max(power)] # Frequency of the system
+plot( freq, power, type='l', xlab="Frequency (Hz)", ylab="Power", main="Power Spectrum" )
+```
+
+The fundamental frequency of the system is at `r fc` Hz.
+
+--- .class #id 
+
+## Conclusion
+
+The basic idea of this app is that users can use varing sampling frequencies to sample their typed in equation and see what the fft algorithm percieves the system frequency as.
+    
+The idea of this app can be extended to a general time series as input and a known sampling frequency. Then we would get the actual system frequency provided that sampling was done at the correct frequency.
+    
+The app can be found at http://goo.gl/r1pBRO.
